@@ -314,7 +314,7 @@ var flag2=1
         await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$set:{"polls.$.done":y}})}
 
       if(req.body.fun!=null){var c =req.body.fun;console.log(c)
-        var v=(`polls.$[cc].votes[${c}]`)
+        var v=(`polls.$.votes[${c}]`)
         console.log(v)
         await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$push:{"polls.$.votedIds":userId}})
         await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll,},{$inc:{"v":1}})
