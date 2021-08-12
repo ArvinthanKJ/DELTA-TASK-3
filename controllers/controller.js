@@ -317,11 +317,7 @@ var flag2=1
         var v=(`polls.$[cc].votes[${c}]`)
         console.log(v)
         await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$push:{"polls.$.votedIds":userId}})
-        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll,},{$inc:{"v":1}},{
-            arrayFilters: [{
-              "cc.type": "pizza",
-            }]
-          })
+        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll,},{$inc:{"v":1}})
     }
     if(req.body.delete!=null)
     {   console.log(currentPoll)
