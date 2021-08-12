@@ -215,10 +215,10 @@ var flag2=1
         res.redirect('/error')  
     })
     app.post('/createPoll',async(req,res)=>{
-        var votes1=[]
+        var votes1=[{Number,Number}]
         if(req.body.commit){
           for(var i=0;i<flag2;i++){
-              votes1[i]=0
+              votes1[i]={Number:0,Number:0}
           }
           var temp= { 
             question:req.body.question,
@@ -313,11 +313,30 @@ var flag2=1
        var y=1
         await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$set:{"polls.$.done":y}})}
 
-      if(req.body.fun!=null){var c =req.body.fun;console.log(c)
-        var v=(`polls.$.votes[${c}]`)
-        console.log(v)
+      if(req.body.fun!=null){
+        var c =Number(req.body.fun);console.log(c)
+        //var v=(`votes.$.vote`)
+        var l=[]
+        var k=[]
+
+        await Teams.findOne({_id:currentTeam},async(err,docs)=>{
+            console.log("bbbbbbbbbbbbbbbbbb")
+            docs.polls.forEach(async(element)=>{
+                if(JSON.stringify(element._id)==JSON.stringify(currentPoll)){
+                    l=element.votes
+                    for(var b=0;b<l.length;b++){
+                        k.push(l[b]._id)
+                    }
+                    console.log(k[c])
+                }
+            })
+            console.log(docs)
+            console.log(l)
+        })
+
+        //console.log(v)
         await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$push:{"polls.$.votedIds":userId}})
-        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll,},{$inc:{"v":1}})
+        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll,'polls.$.votes.$._id':k[c],},{$inc:{"polls.votes.$.vote":1}})
     }
     if(req.body.delete!=null)
     {   console.log(currentPoll)

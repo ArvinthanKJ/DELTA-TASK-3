@@ -10,7 +10,7 @@ const teams= new Schema({
     polls:[{ 
         question:{ type: String },
         options:[{type:String}],
-        votes:[{type:Number,default:0}],
+        votes:[{vote:{type:Number,default:0}}],
         done:{ type: Number,default:0},
         votedIds:[{type:String}]
      }]
