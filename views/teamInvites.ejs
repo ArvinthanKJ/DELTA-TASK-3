@@ -1,0 +1,15 @@
+
+   <h1>Team Invites</h1> 
+   <p>These teams are open to join</p>
+   <form id="form2" method="POST" action="/teamInvites"> </form>
+
+   <% doc.forEach(function(element) {%>
+      <br><button form="form2" value= <%=element.id%> name="j"><%=element.name%> </button>
+   <% }); %>  
+   <p>If you click a team you are already a part of,you will be redirected to it's dashboard</p>
+    <!--<p>Copy and paste the id of a team to join it!!</p>
+  <div >
+   <form method="POST" action="/teamInvites">
+      <p><input type="text" name="inviteId" value="" placeholder=" Paste ID here!"></p>
+      <p class="submit"><input type="submit" name="commit" value="Join"></p>
+   </form></div>-->

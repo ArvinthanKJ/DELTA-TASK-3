@@ -1,0 +1,13 @@
+
+  <div class="login">
+    <h1>Create Poll</h1>
+    <form id="h" method="POST" action="/createPoll">
+      <p><input type="text" name="question" value="" placeholder="question"></p>
+      <% for(var j=0;j<flag2;j++){ %> 
+      <p><input type="text" name='i'  value=""placeholder='options' ></p><% } %> 
+      <p class="submit"><input type="submit" name="commit"  value="Create"></p>
+    </form>
+    <button form="h" name="addOption" value="add">Add Option</button>
+    
+  </div>
+  <footer class="style_footer__gbSax "><h4 class="">Made with ❤️ by <a class="style_a__2TR0l" href="https://delta.nitt.edu/" target="_blank" rel="noopener noreferrer">Delta Force</a> </h4></footer>

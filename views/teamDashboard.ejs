@@ -1,0 +1,9 @@
+
+   <h1>Team Dashboard</h1> 
+    <p><%=docs.name%> </p>
+    <form id="form2" method="POST" action="/teamDashboard"> </form>
+    <div id='teams'>
+        <% for(var i=0;i<docs.polls.length;i++){ var y=""%> 
+       <p> <button form="form2"  value="<%=i%> " name="l"><%=docs.polls[i].question%></button><% if(docs.polls[i].done==1)var y="Results out"%> <%=y%></p><% } %> 
+    <% if(flag==1){ %> 
+   <a href="/createPoll">Create Poll</a><% } %> 

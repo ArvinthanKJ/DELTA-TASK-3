@@ -1,0 +1,10 @@
+
+    <h1>Teams</h1><%=docs.email%> 
+    <form id="form1" method="POST" action="/dashboard"> </form>
+    <div id='teams'>
+        <% for(var i=0;i<docs.teams.length;i++){ %> 
+        <br><button form="form1"  value="<%=docs.teams[i]%>"name="but"><%=docs.teams[i]%></button> <% } %> 
+        
+   </div>
+   <a href="/teamInvites">See all team invites</a><br>
+   <a href="/createTeam">Create Team</a>

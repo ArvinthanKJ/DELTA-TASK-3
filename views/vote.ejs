@@ -1,0 +1,30 @@
+
+   <h1>VOTE</h1> 
+  <% if(t.done==1){ var highest=0 %>
+   <p>Poll has been ended by the admin</p>
+   <% for(var i=0;i<t.options.length;i++){%>
+      <% if(t.votes[i]>highest)highest=t.options[i] %> 
+   <p><%=t.options[i] %> <%=t.votes[i] %>  </p>
+   <%}%>
+   <p><%=highest %> has the most votes!! </p>
+   <form method="POST" action="/vote">
+      <p class="end"><input type="submit" name="delete" value="delete"></p>
+   <%}else{ %>  
+  
+   <% if(p==1){ %>
+      <p>Already voted! Wait for results</p> <%}else{ %> 
+    <p><strong><%=t.question %> </strong></p>
+    <form method="POST" action="/vote">   
+      <% for(var i=0;i<t.options.length;i++){ %> 
+       <input type="radio" id="<%=i%>" name="fun" value="<%=i%>"> 
+       <label for="<%=i%>"><%=t.options[i] %></label><br>
+    <% } %> 
+    <p class="submit"><input type="submit" name="commit"  value="Create"></p>
+      </form>
+      <%}%> 
+      <% if(flag==1){%>
+         <form method="POST" action="/vote">
+            <p class="end"><input type="submit" name="end" value="end"></p>
+            <%}%> 
+         </form> 
+         <%} %> 
