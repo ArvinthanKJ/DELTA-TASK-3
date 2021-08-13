@@ -1,4 +1,3 @@
-delete require.cache['/controllers/controller.js']
 
 const { json } = require("body-parser")
 const bodyParser= require("body-parser")
@@ -17,6 +16,7 @@ module.exports=function(app){
 const mongoose = require('mongoose');
 const Members = require('../models/members');
 const Teams = require('../models/teams');
+const Polls= require('../models/polls');
 mongoose.connect('mongodb://localhost/d3',{useNewUrlParser:true, useUnifiedTopology: true});
 
 mongoose.connection.once('open', function(){
@@ -33,6 +33,7 @@ var currentPoll
 //Routes
 var tempTeam
 var tempRegister
+var temp
 var options1
 var tempPoll
 var poll
@@ -52,6 +53,7 @@ var flag2=1
         options1=null
         tempPoll=null
         poll=null
+        temp=null
         flag=0
         flag2=1 
         p=null
@@ -102,11 +104,10 @@ var flag2=1
         res.redirect('/login')
     })
     
-    app.get('/dashboard',async(req,res)=>{
+    app.get('/dashboard',(req,res)=>{
         if(userId!=null){
-        await Members.findOne({_id:userId},function(err,docs){
-            if(err)console.log("error");
-              
+        Members.findOne({_id:userId},async (err,docs)=>{
+            
             res.render('dashboard.ejs',{docs:docs})
         })
     }else
@@ -122,21 +123,26 @@ var flag2=1
     app.get('/teamInvites',async (req,res)=>{var q
         if(userId!=null){
             await Teams.find({},async (err,docs)=>{
-                 function filterByID(item) {
-                    item.groupMembers.forEach(async(element)=>{q=null
+                 function filterByID(item) {q=[]
+                    item.groupMembers.forEach(async(element)=>{
                         console.log(element)
                         console.log(userId)
                         if(JSON.stringify(element)==JSON.stringify(userId)){
-                        q=0
-                        }
-                        if(q!=0)
-                        q=1
+                            q.push(0)
+                        }else
+                        q.push(1)
                     })
-                    console.log(q)
-                    if(q==0)
-                    return false;
-                    else if(q==1)
-                    return true;
+                    var t=1
+                    console.log("bbbbbbbbbb"+q)
+                    for(var u=0;u<q.length;u++){
+                        if(q[u]==0){
+                        return false;}else
+                            t++
+                            if(t==q.length+1)
+                            return true;
+                    }
+
+                    
                   }
                   
                   var doc = docs.filter(filterByID)
@@ -150,6 +156,7 @@ var flag2=1
     app.post('/teamInvites',async(req,res)=>{
         var j =req.body.j
         var k
+        var q
         var flag1=0
         console.log(j)
         await Members.findOne({_id:userId},async(err,doc)=>{
@@ -161,12 +168,12 @@ var flag2=1
             } 
             });
             if(flag1==0){
-                await Teams.updateOne({_id:j},{$push:{groupMembers:userId}});
+                await Teams.findOneAndUpdate({_id:j},{$push:{groupMembers:userId}},(err,docs)=>{q=docs.name});
                await Members.findOne({_id:userId},(err,docs)=>{
                  k=docs.teamCount+1
                 })
-         
-                await Members.updateOne({_id:userId},{$set:{teamCount:k},$push:{teams:j}});
+                console.log("iiiiiiiiiiiiii"+q)
+                await Members.updateOne({_id:userId},{$set:{teamCount:k},$push:{teams:j,teamNames:q}});
                  
              }
 
@@ -196,7 +203,7 @@ var flag2=1
             if(err)console.log("error");
             var x=docs.teamCount+1
             console.log('2'+tempId)
-          await   Members.updateOne({_id:userId}, { $set: { teamCount: x },$push: {teams:tempId} });
+          await   Members.updateOne({_id:userId}, { $set: { teamCount: x },$push: {teams:tempId,teamNames:req.body.teamName} });
            await  Teams.updateOne({name:req.body.teamName},{ $push:{groupMembers:userId}});
         
         })
@@ -215,19 +222,19 @@ var flag2=1
         res.redirect('/error')  
     })
     app.post('/createPoll',async(req,res)=>{
-        var votes1=[{Number,Number}]
+        var votes1=[]
         if(req.body.commit){
           for(var i=0;i<flag2;i++){
-              votes1[i]={Number:0,Number:0}
+              votes1[i]={vote:0}
           }
-          var temp= { 
+          
+          temp= await new Polls({ 
             question:req.body.question,
             options:req.body.i,
+            teamID:currentTeam,
             votes:votes1
-         } 
-         console.log(temp)
-         console.log(currentTeam)
-         await Teams.updateOne({_id:currentTeam},{$push:{polls:temp}})
+         } )
+         temp.save()
          res.redirect('/teamDashboard')
 
         }else 
@@ -241,30 +248,25 @@ var flag2=1
 
     app.get('/teamDashboard',async(req,res)=>{
         if(userId!=null){ flag=0
+            flag2=0
             if(currentTeam!=null){
-            
-            console.log("1"+currentTeam)
-            await Teams.findOne({_id:currentTeam},async function(err,docs){
-                if(err)console.log("error");
-                console.log(docs)
-                poll=docs.polls.length
-                if(docs.adminId==userId)flag=1;
-               res.render('teamDashboard.ejs',{docs:docs,flag:flag})
+                await Teams.findOne({_id:currentTeam},async(err,docs)=>{
+                if(docs.adminId==userId)flag=1
+                })
+                await Polls.find({teamID:currentTeam},async(err,docs)=>{
+                var doc=Array.from(docs)
+                res.render('teamDashboard.ejs',{doc:doc,flag:flag})
             })
-        
+            
     }}else
     res.redirect('/error')
 })
     app.post('/teamDashboard',async(req,res)=>{
         
         poll=Number(req.body.l)
-        console.log(req.body.l)
-        console.log(poll)
-        console.log("vbbbbb"+currentTeam)
-        await Teams.findOne({_id:currentTeam},async function(err,docs){
-         console.log("bbbbbb"+docs)   
-         console.log("kj"+docs[poll])
-         currentPoll=docs.polls[poll]._id
+        await Polls.find({teamID:currentTeam},async(err,docs)=>{
+            var doc=Array.from(docs)
+         currentPoll=doc[poll]._id
 
         console.log("9999999"+currentPoll)
         })
@@ -280,10 +282,10 @@ var flag2=1
         if(userId!=null){
             var j
             p =0
-            var t=[]
-            await Teams.findOne({_id:currentTeam},async(err,docs)=>{
+            var t
+            await Polls.find({_id:currentPoll},async(err,docs)=>{
                 console.log("ppppppp"+docs)
-                docs.polls.forEach(async function(element){
+                docs.forEach(async function(element){
                     j=0
                     if(JSON.stringify(element._id)==JSON.stringify(currentPoll)){
                        console.log(docs) 
@@ -297,52 +299,46 @@ var flag2=1
 
                     })}
                     }
-                   
                 })
 
             })
+            console.log("oooooooooooooooooo"+p)
+            
         res.render('vote.ejs',{currentPoll:currentPoll,t:t,p:p,flag:flag})
     }else
     res.redirect('/error')})  
     
     app.post('/vote',async (req,res)=>{
-        console.log(currentPoll)
+        console.log("nnnnnnnnnn"+currentPoll)
         
         if(req.body.end!=null)
        {    console.log("ccccccc"+req.body.end)
        var y=1
-        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$set:{"polls.$.done":y}})}
+        await Polls.updateOne({_id:currentPoll},{$set:{"done":y}})}
 
       if(req.body.fun!=null){
         var c =Number(req.body.fun);console.log(c)
-        //var v=(`votes.$.vote`)
-        var l=[]
-        var k=[]
+        var v=`votes.$.[${c}].$`
+        var b=[]
+        console.log(v)
+        await Polls.findOne({_id:currentPoll},async(err,docs)=>{
+            docs.votes.forEach(async(element)=>{
+                b.push(element._id)
 
-        await Teams.findOne({_id:currentTeam},async(err,docs)=>{
-            console.log("bbbbbbbbbbbbbbbbbb")
-            docs.polls.forEach(async(element)=>{
-                if(JSON.stringify(element._id)==JSON.stringify(currentPoll)){
-                    l=element.votes
-                    for(var b=0;b<l.length;b++){
-                        k.push(l[b]._id)
-                    }
-                    console.log(k[c])
-                }
             })
-            console.log(docs)
-            console.log(l)
-        })
+            console.log("........."+b)
+            b=b[c]
+            console.log("........."+b)
 
-        //console.log(v)
-        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll},{$push:{"polls.$.votedIds":userId}})
-        await Teams.updateOne({_id:currentTeam,'polls._id':currentPoll,'polls.$.votes.$._id':k[c],},{$inc:{"polls.votes.$.vote":1}})
+        })
+        await Polls.updateOne({_id:currentPoll},{$push:{votedIds:userId}})
+        await Polls.updateOne({_id:currentPoll,'votes._id':b},{$inc:{'votes.$.vote':1}})
     }
     if(req.body.delete!=null)
     {   console.log(currentPoll)
-        await Teams.updateOne({_id:currentTeam},{$pull:{polls:{_id:currentPoll} } })
+        await Polls.deleteOne({_id:currentPoll})
     }
        
-       res.redirect('/dashboard') 
+       res.redirect('/teamDashboard') 
     })  
 }

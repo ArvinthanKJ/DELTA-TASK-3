@@ -1,9 +1,15 @@
 
+<link rel="stylesheet" href="/assets/style.css">
+
    <h1>Team Dashboard</h1> 
-    <p><%=docs.name%> </p>
+    <p><%=doc.name%> </p>
+    <h2>Polls</h2>
     <form id="form2" method="POST" action="/teamDashboard"> </form>
     <div id='teams'>
-        <% for(var i=0;i<docs.polls.length;i++){ var y=""%> 
-       <p> <button form="form2"  value="<%=i%> " name="l"><%=docs.polls[i].question%></button><% if(docs.polls[i].done==1)var y="Results out"%> <%=y%></p><% } %> 
+        <% for(var i=0;i<doc.length;i++){ var y=""%> 
+         <% if(doc[i].done==1)var y="Results out!!"%> 
+       <p> <button form="form2"  value="<%=i%> " name="l"><%=doc[i].question%><br><%=y%></button></p><% } %> 
+       <a href="dashboard">Back to dashboard</a>
+
     <% if(flag==1){ %> 
    <a href="/createPoll">Create Poll</a><% } %> 

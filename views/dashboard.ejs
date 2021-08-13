@@ -1,10 +1,14 @@
 
-    <h1>Teams</h1><%=docs.email%> 
+<link rel="stylesheet" href="/assets/style.css">
+
+   <h1>Teams</h1>
     <form id="form1" method="POST" action="/dashboard"> </form>
     <div id='teams'>
         <% for(var i=0;i<docs.teams.length;i++){ %> 
-        <br><button form="form1"  value="<%=docs.teams[i]%>"name="but"><%=docs.teams[i]%></button> <% } %> 
-        
-   </div>
-   <a href="/teamInvites">See all team invites</a><br>
+        <br><button form="form1"  value="<%=docs.teams[i]%>"name="but"><%=docs.teamNames[i]%></button> <% } %> 
+        <br><br><a href="/teamInvites">See all team invites</a><br><br>
    <a href="/createTeam">Create Team</a>
+   <br>
+   <a href="/login">Log Out</a>
+   </div>
+   

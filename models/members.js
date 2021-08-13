@@ -8,6 +8,7 @@ const members= new Schema({
     roll:{ type: Number },
     password:{ type: String },
     teams:[{type:String}],
+    teamNames:[{type:String}],
     teamCount:{type:Number,default:0}
 })  
 const Members=mongoose.model('_Members',members)

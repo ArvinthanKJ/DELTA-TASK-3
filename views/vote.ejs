@@ -1,12 +1,14 @@
+<link rel="stylesheet" href="/assets/style.css">
 
    <h1>VOTE</h1> 
+   <div id="login">
   <% if(t.done==1){ var highest=0 %>
    <p>Poll has been ended by the admin</p>
    <% for(var i=0;i<t.options.length;i++){%>
-      <% if(t.votes[i]>highest)highest=t.options[i] %> 
-   <p><%=t.options[i] %> <%=t.votes[i] %>  </p>
+      <% if(t.votes[i].vote>highest)highest=t.options[i] %> 
+   <p><%=t.options[i] %> has <%=t.votes[i].vote %> votes </p>
    <%}%>
-   <p><%=highest %> has the most votes!! </p>
+   <p><strong><%=highest %> has the most votes!!</strong> </p>
    <form method="POST" action="/vote">
       <p class="end"><input type="submit" name="delete" value="delete"></p>
    <%}else{ %>  
@@ -16,10 +18,12 @@
     <p><strong><%=t.question %> </strong></p>
     <form method="POST" action="/vote">   
       <% for(var i=0;i<t.options.length;i++){ %> 
-       <input type="radio" id="<%=i%>" name="fun" value="<%=i%>"> 
-       <label for="<%=i%>"><%=t.options[i] %></label><br>
+         <div class="options">
+      <label for="<%=i%>"><%=t.options[i] %></label>
+      <input type="radio" id="<%=i%>" name="fun" value="<%=i%>"> <br></div>
     <% } %> 
-    <p class="submit"><input type="submit" name="commit"  value="Create"></p>
+   
+    <p class="submit"><input type="submit" name="commit"  value="vote!"></p>
       </form>
       <%}%> 
       <% if(flag==1){%>
@@ -28,3 +32,6 @@
             <%}%> 
          </form> 
          <%} %> 
+         <a href="teamDashboard">Back to team dashboard</a>
+
+      </div>
